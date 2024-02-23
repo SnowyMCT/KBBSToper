@@ -1,0 +1,116 @@
+package mc233.fun.kbbstoper;
+
+import java.util.List;
+import java.util.regex.Pattern;
+
+import org.bukkit.entity.Player;
+
+import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import mc233.fun.kbbstoper.sql.SQLer;
+
+public class PAPIExpansion extends PlaceholderExpansion {
+
+	private static SQLer sql;
+
+	private String author;
+	private String identifier;
+	private String version;
+
+	PAPIExpansion() {
+		this.author = KBBSToper.getInstance().getDescription().getAuthors().toString();
+		this.identifier = KBBSToper.getInstance().getDescription().getName().toLowerCase();
+		this.version = KBBSToper.getInstance().getDescription().getVersion();
+	}
+
+	public static void setSQLer(SQLer sql) {
+		PAPIExpansion.sql = sql;
+	}
+
+	// 因为是插件包含的类, PAPI不能重载这个拓展
+	// 这个方法的重写是必须的
+	@Override
+	public boolean persist() {
+		return true;
+	}
+
+	// 因为是插件包含的类, 不需要检查这个
+	@Override
+	public boolean canRegister() {
+		return true;
+	}
+
+	@Override
+	public String getAuthor() {
+		return author;
+	}
+
+	@Override
+	public String getIdentifier() {
+		return identifier;
+	}
+
+	@Override
+	public String getVersion() {
+		return version;
+	}
+
+	@Override
+	public String onPlaceholderRequest(Player player, String identifier) {
+		Poster poster;
+		if (player != null) {// 有玩家
+			poster = sql.getPoster(player.getUniqueId().toString());
+			if (identifier.equals("bbsid")) {// BBS用户名
+				if (poster == null) {
+					return Message.GUI_NOTBOUND.getString();
+				} else {
+					return poster.getBbsname();
+				}
+			}
+			if (identifier.equals("posttimes")) {// 顶贴次数
+				if (poster == null) {
+					return Message.GUI_NOTBOUND.getString();
+				} else {
+					return String.valueOf(poster.getTopStates().size());
+				}
+			}
+		}
+		if (identifier.equals("pageid")) {// 宣传贴id
+			return Option.BBS_URL.getString();
+		}
+		if (identifier.equals("pageurl")) {// 宣传贴url
+			return "https://www.klpbbs.com/thread-" + Option.BBS_URL.getString() + "-1-1.html";
+		}
+		if (identifier.equals("lastpost")) {// 上一次顶贴时间
+			Crawler crawler = new Crawler();
+			if (crawler.visible) {// 如果帖子可视，就获取帖子最近一次顶贴
+				if (crawler.Time.size() > 0) { // 如果从没有人顶帖，就以“----”代替上次顶帖时间(原来不加判断直接get会报索引范围错误)
+					return crawler.Time.get(0);
+				} else {
+					return "----";
+				}
+			} else {
+				return Message.GUI_PAGENOTVISIBLE.getString();// 帖子不可视
+			}
+		}
+		if (identifier.equals("extrarewards")) {
+			String extra = Util.getExtraReward(new Crawler());
+			if (extra == null) {
+				extra = Message.NONE.getString();
+			}
+			return extra;
+		}
+		String pattern = "^top_[1-9]\\d*$";// top_正整数的正则表达式
+		if (Pattern.matches(pattern, identifier)) {// 如果匹配这种格式
+			int rank = Integer.parseInt(identifier.split("_")[1]);
+			int index = rank - 1;
+			List<Poster> listposter = sql.getTopPosters();
+			if (index < listposter.size()) {
+				return Message.POSTERPLAYER.getString() + ":" + listposter.get(index).getName() + " "
+						+ Message.POSTERID.getString() + ":" + listposter.get(index).getBbsname() + " "
+						+ Message.POSTERNUM.getString() + ":" + listposter.get(index).getCount();
+			}
+		}
+		return null;
+	}
+
+}
