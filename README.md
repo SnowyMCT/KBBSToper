@@ -12,7 +12,7 @@
 
 ## 使用方法
 
-1. 获得一份构建好的jar文件, 请查看[https://github.com/R-Josef/BBSToper/releases](https://github.com/R-Josef/BBSToper/releases)
+1. 获得一份构建好的jar文件, 请查看[https://github.com/SnowCherryServer/KBBSToper/releases/tag/114514](https://github.com/SnowCherryServer/KBBSToper/releases/tag/114514)
 2. 将构建好的文件放入plugins文件夹
 3. 前往klpbbs复制您的帖子id并替换掉配置文件中默认链接中的id
 4. 重启/启动服务器
