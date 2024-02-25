@@ -44,7 +44,7 @@
 | ---------------------------------- | ------------------------------ | --------------------------------------------- |
 | `/bt`                        | 无需权限                       | 显示箱子GUI                                   |
 | `/bt help`                   | 无需权限                       | 显示帮助信息                                  |
-| `/bt binding <MCBBS论坛ID>`  | `bbstoper.binding`             | 绑定论坛账号, 注意这里是ID不是uid             |
+| `/bt binding <苦力怕BBS论坛ID>`  | `bbstoper.binding`             | 绑定论坛账号, 注意这里是ID不是uid             |
 | `/bt reward`                 | `bbstoper.reward`              | 领取奖励                                      |
 | `/bt testreward [模式]`      | `bbstoper.testreward`          | 测试奖励, 模式: `normal` `incentive` `offday` |
 | `/bt list <页数>`            | `bbstoper.list`                | 列出所有顶帖者                                |
