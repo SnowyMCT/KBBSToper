@@ -79,6 +79,30 @@ public class Crawler {
 			Time.add(time);
 		}
 	}
+	public void kickExpiredData() {
+  		  SimpleDateFormat sdfm = new SimpleDateFormat("yyyy-M-d HH:mm");
+  		  Date now = new Date();
+  		  long validtime = Option.REWARD_PERIOD.getInt() * 24 * 60 * 60 * 1000L;
+  		  Date expirydate = new Date(now.getTime() - validtime);
+   		 for (int i = 0; i < Time.size(); i++) {
+   		     String timeStr = Time.get(i);
+    		    if (timeStr == null || timeStr.isEmpty()) {
+    		        continue;  // Skip this iteration if the string is null or empty
+    		    }
+   		     Date date = null;
+   		     try {
+     		       date = sdfm.parse(timeStr);
+    		    } catch (ParseException e) {
+   		         e.printStackTrace();
+   		         continue;  // Skip this iteration if the date parsing fails
+   		     }
+   		     if (date.before(expirydate)) {
+   		         Time.remove(i);
+   		         ID.remove(i);
+    		        i--;
+      		  }
+  		  }
+		}
 
 	public void kickExpiredData() {// 剔除过期的数据
 		// 注意bbs的日期格式，月份和天数都是非零开始，小时分钟是从零开始
