@@ -89,6 +89,7 @@ public class Crawler {
 		for (int i = 0; i < Time.size(); i++) {
 			Date date = null;
 			try {
+				System.out.println(Time.get(i))
 				date = sdfm.parse(Time.get(i));
 			} catch (ParseException e) {
 				e.printStackTrace();
