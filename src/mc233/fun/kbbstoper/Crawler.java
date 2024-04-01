@@ -104,30 +104,6 @@ public class Crawler {
   		  }
 		}
 
-	public void kickExpiredData() {// 剔除过期的数据
-		// 注意bbs的日期格式，月份和天数都是非零开始，小时分钟是从零开始
-		SimpleDateFormat sdfm = new SimpleDateFormat("yyyy-M-d HH:mm");
-		Date now = new Date();
-		long validtime = Option.REWARD_PERIOD.getInt() * 24 * 60 * 60 * 1000L;// 有效期
-		Date expirydate = new Date(now.getTime() - validtime);// 过期时间，如果小于这个时间则表示过期
-		for (int i = 0; i < Time.size(); i++) {
-			Date date = null;
-			try {
-				System.out.println(Time.get(i));
-				date = sdfm.parse(Time.get(i));
-			} catch (ParseException e) {
-				e.printStackTrace();
-				return;
-			}
-			if (date.before(expirydate)) {// 过期了
-				Time.remove(i);
-				ID.remove(i);
-				i--;// 这里要吧序数往前退一个
-			}
-		}
-
-	}
-
 	public void activeReward() {// 主动给玩家发奖励
 		for (int i = 0; i < ID.size(); i++) {
 			String bbsname = ID.get(i);
