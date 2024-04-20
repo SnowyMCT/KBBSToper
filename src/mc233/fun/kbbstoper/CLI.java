@@ -260,7 +260,7 @@ public class CLI implements TabExecutor {
 							}
 							if (!topstates.contains(crawler.Time.get(i))) {// 如果数据库里没有这次顶贴的记录
 								havepost = true;
-								String datenow = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+								String datenow = new SimpleDateFormat("yyyy-M-dd").format(new Date());
 								if (!datenow.equals(poster.getRewardbefore())) {// 如果上一次顶贴不是今天，置零
 									poster.setRewardbefore(datenow);
 									poster.setRewardtime(0);
