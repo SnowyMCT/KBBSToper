@@ -58,7 +58,7 @@ public class Reward {
 						result = true;
 					}
 				} else if (datepattern.matcher(day).matches()) {// 如果是00-00这种字符串
-					SimpleDateFormat offdayformat = new SimpleDateFormat("MM-dd");
+					SimpleDateFormat offdayformat = new SimpleDateFormat("M-dd");
 					Calendar offdaycalendar = Calendar.getInstance();// 设定的假日日期(1970年的...)
 					try {
 						Date offdaydate = offdayformat.parse(day);
