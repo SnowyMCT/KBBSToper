@@ -122,7 +122,7 @@ public class Crawler {
 					} else {// 不在线就跳过
 						continue;
 					}
-					String datenow = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+					String datenow = new SimpleDateFormat("yyyy-M-dd").format(new Date());
 					if (!datenow.equals(poster.getRewardbefore())) {// 上次领奖的日期不是今天，直接将奖励次数清零
 						poster.setRewardbefore(datenow);// 奖励日期设置为今天
 						poster.setRewardtime(0);
