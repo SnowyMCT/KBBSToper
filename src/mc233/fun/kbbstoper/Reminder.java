@@ -41,7 +41,7 @@ public class Reminder implements Listener {
 				boolean isposted = true;// 是否有顶贴者
 				UUID uuid = event.getPlayer().getUniqueId();
 				Poster poster = sql.getPoster(uuid.toString());
-				String datenow = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+				String datenow = new SimpleDateFormat("yyyy-M-dd").format(new Date());
 				if (poster == null) {// 玩家未绑定
 					isbinded = false;
 					isposted = false;
