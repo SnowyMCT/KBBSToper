@@ -61,7 +61,7 @@
 
 | 占位符                | 描述                                               |
 | --------------------- | -------------------------------------------------- |
-| %bbstoper_bbsid%      | 当前玩家的MCBBS用户名                              |
+| %bbstoper_bbsid%      | 当前玩家的KLPBBS用户名                              |
 | %bbstoper_posttimes%  | 当前玩家的顶贴次数                                 |
 | %bbstoper_pageid%     | 宣传贴的id                                         |
 | %bbstoper_pageurl%    | 宣传贴的链接                                       |
