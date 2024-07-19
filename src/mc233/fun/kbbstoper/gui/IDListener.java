@@ -1,22 +1,6 @@
-/*
- * Module Copyright (c) 2018-2019 Karlatemp. All rights reserved.
- * Reserved.FileName: IDListener.java@author: karlatemp@vip.qq.com: 19-9-17 下午1:39@version: 2.0
- * Only the following methods:
- *	  Module name: com.maddyhome.idea.copyright.pattern.ModuleInfo@646505a3
- *	  Module Methods:
- *		  void execute(Listener, Event);
- *		  void <init>(UUID);
- *		  void callEvent(Event);
- *		  void register();
- *		  void unregister();
- *		  void unregister(UUID);
- *		  void unregister(CommandSender);
- *		  void register();
- */
-
 package mc233.fun.kbbstoper.gui;
 
-import java.util.*;
+import mc233.fun.kbbstoper.ConfigManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -30,9 +14,12 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import mc233.fun.kbbstoper.*;
 
+import java.util.*;
+
 public class IDListener extends RegisteredListener implements Listener, EventExecutor {
 	public static final Object lock = new Object(); // 线程锁
 	public static final Map<UUID, IDListener> map = new HashMap<>();
+	private static ConfigManager configManager; // 添加 ConfigManager 实例
 
 	private UUID uid;
 	private boolean state;
@@ -49,10 +36,11 @@ public class IDListener extends RegisteredListener implements Listener, EventExe
 		}
 	}
 
-	public IDListener(UUID uuid) {// 在构造函数中初始化RegisteredListener和UUID
+	public IDListener(UUID uuid, ConfigManager configManager) { // 修改构造函数以接受 ConfigManager 参数
 		super(null, null, EventPriority.HIGH, KBBSToper.getInstance(), false);
 		this.uid = uuid;
 		this.state = false;
+		IDListener.configManager = configManager; // 保存 ConfigManager 实例
 	}
 
 	public static void unregister(UUID uniqueId) {
@@ -110,19 +98,18 @@ public class IDListener extends RegisteredListener implements Listener, EventExe
 		List<String> cancelkeywords = Option.GUI_CANCELKEYWORDS.getStringList();// 取消绑定关键词
 		if (cancelkeywords.contains(msg)) {// 如果关键词中包含这次输入的消息
 			unregister();// 取消监听事件
-			CLI.getInstance().getCache().put(player.getUniqueId().toString(), null);// 清理这个键
+			CLI.getInstance(configManager).getCache().put(player.getUniqueId().toString(), null);// 清理这个键
 			player.sendMessage(Message.PREFIX.getString() + Message.CANCELED.getString());
 			return;
 		}
 		List<String> list = new ArrayList<>(Arrays.asList(msg.split("\\s+")));
 		list.add(0, "binding");
 		String[] args = list.toArray(new String[0]);
-		CLI.getInstance().onCommand(player, null, null, args);
+		CLI.getInstance(configManager).onCommand(player, null, null, args);
 		if (state) {// state为true说明这是第二次进入这个方法
 			unregister();
 		} else {// state为false说明是第一次进入
 			state = true;
 		}
 	}
-
 }

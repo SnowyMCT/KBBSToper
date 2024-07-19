@@ -13,9 +13,11 @@ import java.util.Arrays;
 import java.util.UUID;
 
 public class GUIManager implements Listener {
+	private ConfigManager configManager; // 添加 ConfigManager 实例
 
-	public GUIManager(Plugin plugin) {
+	public GUIManager(Plugin plugin, ConfigManager configManager) { // 修改构造函数以接受 ConfigManager 参数
 		plugin.getServer().getPluginManager().registerEvents(this, plugin);
+		this.configManager = configManager; // 保存 ConfigManager 实例
 	}
 
 	@EventHandler
@@ -34,7 +36,7 @@ public class GUIManager implements Listener {
 						IDListener rglistener = IDListener.map.get(uid);
 						// 如果这个玩家没有一个监听器
 						if (rglistener == null) {
-							new IDListener(player.getUniqueId()).register();// 为此玩家创建一个监听器
+							new IDListener(player.getUniqueId(), configManager).register(); // 为此玩家创建一个监听器
 							String keywords = Arrays.toString(Option.GUI_CANCELKEYWORDS.getStringList().toArray());
 							player.sendMessage(Message.PREFIX.getString() + Message.ENTER.getString().replaceAll("%KEYWORD%", keywords));
 						}
@@ -48,7 +50,7 @@ public class GUIManager implements Listener {
 			if (event.getRawSlot() == 13) {
 				player.closeInventory();
 				String[] args = { "reward" };
-				CLI.getInstance().onCommand(player, null, null, args);
+				CLI.getInstance(configManager).onCommand(player, null, null, args); // 将 ConfigManager 实例传递给 CLI 类
 			}
 			if (event.getRawSlot() == 22) {// 获取链接
 				player.closeInventory();
