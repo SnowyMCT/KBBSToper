@@ -8,9 +8,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import mc233.fun.kbbstoper.*;
 
+import java.util.logging.Logger;
+
 public class KBBSToper extends JavaPlugin {
 	private static KBBSToper kbbstoper;
-
+	private Logger logger = Logger.getLogger("KBBSToper");
 	public static KBBSToper getInstance() {
 		return kbbstoper;
 	}
@@ -34,14 +36,14 @@ public class KBBSToper extends JavaPlugin {
 		}
 		int pluginId = 21098; // <-- Replace with the id of your plugin!
 		Metrics metrics = new Metrics(this, pluginId);
-		this.getLogger().info(Message.ENABLE.getString());
-		this.getLogger().info("------");
-		this.getLogger().info("插件原作者 R_Josef");
-		getLogger().info("GitHub项目地址 https://github.com/R-Josef/BBSToper");
-		getLogger().info("------");
-		getLogger().info("修改作者 小浩");
-		getLogger().info("项目地址 https://github.com/SnowCherryServer/KBBSToper");
-		getLogger().info("-----");
+		logInfo(Message.ENABLE.getString());
+		logInfo("------");
+		logInfo("插件原作者 R_Josef");
+		logInfo("GitHub项目地址 https://github.com/R-Josef/BBSToper");
+		logInfo("------");
+		logInfo("修改作者 小浩");
+		logInfo("项目地址 https://github.com/SnowCherryServer/KBBSToper");
+		logInfo("-----");
 	}
 
 	@Override
@@ -58,5 +60,10 @@ public class KBBSToper extends JavaPlugin {
 		thread.setDaemon(true);
 		thread.start();
 	}
+
+	private void logInfo(String message) {
+		logger.info(message);
+	}
+
 
 }
