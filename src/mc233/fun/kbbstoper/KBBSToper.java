@@ -22,8 +22,8 @@ public class KBBSToper extends JavaPlugin {
 		Option.load();
 		Message.load(configManager); // 将 ConfigManager 实例传递给 Message 类
 		SQLManager.initializeSQLer();
-		this.getCommand("kbbstoper").setExecutor(CLI.getInstance());
-		this.getCommand("kbbstoper").setTabCompleter(CLI.getInstance());
+		this.getCommand("kbbstoper").setExecutor(CLI.getInstance(configManager)); // 将 ConfigManager 实例传递给 CLI 类
+		this.getCommand("kbbstoper").setTabCompleter(CLI.getInstance(configManager)); // 将 ConfigManager 实例传递给 CLI 类
 		new Reminder(this);
 		new GUIManager(this);
 		SQLManager.startTimingReconnect();
