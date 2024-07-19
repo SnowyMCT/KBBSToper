@@ -6,8 +6,6 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import mc233.fun.kbbstoper.*;
-
 import java.util.logging.Logger;
 
 public class KBBSToper extends JavaPlugin {
@@ -20,10 +18,9 @@ public class KBBSToper extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		kbbstoper = this;
-		this.saveDefaultConfig();
+		ConfigManager configManager = new ConfigManager(this); // 创建 ConfigManager 实例
 		Option.load();
-		Message.saveDefaultConfig();
-		Message.load();
+		Message.load(configManager); // 将 ConfigManager 实例传递给 Message 类
 		SQLManager.initializeSQLer();
 		this.getCommand("kbbstoper").setExecutor(CLI.getInstance());
 		this.getCommand("kbbstoper").setTabCompleter(CLI.getInstance());
@@ -64,6 +61,4 @@ public class KBBSToper extends JavaPlugin {
 	private void logInfo(String message) {
 		logger.info(message);
 	}
-
-
 }

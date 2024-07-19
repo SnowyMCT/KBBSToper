@@ -21,7 +21,7 @@ public class GUI {
 
 	private static SQLer sql;
 	private Inventory inv;
-	
+
 	public static String getTitle() {// 获取插件的gui标题必须用此方法，因为用户可能会修改gui标题
 		String title = Message.GUI_TITLE.getString().replaceAll("%PREFIX%", Message.PREFIX.getString());
 		return title;
@@ -31,7 +31,7 @@ public class GUI {
 		createGui(player);
 		Bukkit.getScheduler().runTask(KBBSToper.getInstance(), () -> player.openInventory(inv));
 	}
-	
+
 	class BBSToperGUIHolder implements InventoryHolder {// 定义一个Holder用于识别此插件的GUI
 		@Override
 		public Inventory getInventory() {
@@ -140,7 +140,7 @@ public class GUI {
 		compass.setItemMeta(compassmeta);
 		inv.setItem(22, compass);
 	}
-	
+
 	public ItemStack getRandomPane() {// 获取随机一种颜色的玻璃板
 		short data = (short)(Math.random()* 16);// 这会随机取出0-15的数据值
 		while (data == 8) {// 8号亮灰色染色玻璃板根本没有颜色
@@ -152,10 +152,10 @@ public class GUI {
 
 		} catch (NoSuchFieldError e) {// 某些高版本服务端不兼容旧版写法
 			String[] glasspanes = {"WHITE_STAINED_GLASS_PANE", "ORANGE_STAINED_GLASS_PANE", "MAGENTA_STAINED_GLASS_PANE",
-			"LIGHT_BLUE_STAINED_GLASS_PANE", "YELLOW_STAINED_GLASS_PANE", "LIME_STAINED_GLASS_PANE", "PINK_STAINED_GLASS_PANE",
-			"GRAY_STAINED_GLASS_PANE", "LIGHT_GRAY_STAINED_GLASS_PANE", "CYAN_STAINED_GLASS_PANE", "PURPLE_STAINED_GLASS_PANE",
-			"BLUE_STAINED_GLASS_PANE", "BROWN_STAINED_GLASS_PANE", "GREEN_STAINED_GLASS_PANE", "RED_STAINED_GLASS_PANE",
-			"BLACK_STAINED_GLASS_PANE"};
+					"LIGHT_BLUE_STAINED_GLASS_PANE", "YELLOW_STAINED_GLASS_PANE", "LIME_STAINED_GLASS_PANE", "PINK_STAINED_GLASS_PANE",
+					"GRAY_STAINED_GLASS_PANE", "LIGHT_GRAY_STAINED_GLASS_PANE", "CYAN_STAINED_GLASS_PANE", "PURPLE_STAINED_GLASS_PANE",
+					"BLUE_STAINED_GLASS_PANE", "BROWN_STAINED_GLASS_PANE", "GREEN_STAINED_GLASS_PANE", "RED_STAINED_GLASS_PANE",
+					"BLACK_STAINED_GLASS_PANE"};
 			frame = new ItemStack(Material.getMaterial(glasspanes[data]), 1);
 		}
 		ItemMeta framemeta = frame.getItemMeta();
@@ -171,7 +171,7 @@ public class GUI {
 	public void setGui(Inventory inv) {
 		this.inv = inv;
 	}
-	
+
 	public static void setSQLer(SQLer sql) {
 		GUI.sql = sql;
 	}

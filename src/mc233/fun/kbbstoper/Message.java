@@ -1,15 +1,11 @@
 package mc233.fun.kbbstoper;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 public enum Message {
 	PREFIX("prefix"),
@@ -92,10 +88,8 @@ public enum Message {
 	HELP_DELETE("help.delete"),
 	HELP_RELOAD("help.reload");
 
-	public String path;
-
+	private String path;
 	private static FileConfiguration messageConfig;
-	private static File messageFile;
 	private String cacheString; // 缓存内容
 	private List<String> cacheStringList; // 缓存内容
 
@@ -103,31 +97,12 @@ public enum Message {
 		this.path = path;
 	}
 
-	public static void load() {// 加载与重载
-		if (messageFile == null) {
-			messageFile = new File(KBBSToper.getInstance().getDataFolder(), "lang.yml");
-		}
-		messageConfig = YamlConfiguration.loadConfiguration(messageFile);// 加载配置
-		try (Reader reader = new InputStreamReader(KBBSToper.getInstance().getResource("lang.yml"),
-				StandardCharsets.UTF_8)) {// 读取默认配置
-			YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(reader);
-			messageConfig.setDefaults(defConfig);// 设置默认
-		} catch (IOException ioe) {
-			KBBSToper.getInstance().getLogger().log(Level.SEVERE, "读取默认语言文件时出错!", ioe);
-		}
+	public static void load(ConfigManager configManager) {// 加载与重载
+		messageConfig = configManager.getLangFile(); // 从 ConfigManager 获取 lang 文件的配置
 		// 删除缓存
 		for (Message m : values()) {
 			m.cacheString = null;
 			m.cacheStringList = null;
-		}
-	}
-
-	public static void saveDefaultConfig() {
-		if (messageFile == null) {
-			messageFile = new File(KBBSToper.getInstance().getDataFolder(), "lang.yml");
-		}
-		if (!messageFile.exists()) {
-			KBBSToper.getInstance().saveResource("lang.yml", false);
 		}
 	}
 
@@ -144,5 +119,4 @@ public enum Message {
 				messageConfig.getStringList(path).stream().map(msg -> ChatColor.translateAlternateColorCodes('&', msg))
 						.collect(Collectors.toList()));
 	}
-
 }

@@ -27,6 +27,7 @@ public class CLI implements TabExecutor {
 	private static SQLer sql;
 	private Map<String, String> cache = new HashMap<>();// 这个map是为了暂存玩家的绑定信息的
 	private Map<UUID, Long> queryrecord = new HashMap<>();// 这个map是用于储存玩家上次查询顶贴记录的时间
+	private static ConfigManager configManager; // 添加 ConfigManager 实例
 
 	private static CLI cli = new CLI();
 
@@ -34,7 +35,8 @@ public class CLI implements TabExecutor {
 
 	}
 
-	public static CLI getInstance() {
+	public static CLI getInstance(ConfigManager configManager) { // 修改 getInstance 方法以接受 ConfigManager 参数
+		CLI.configManager = configManager; // 保存 ConfigManager 实例
 		return cli;
 	}
 
@@ -472,8 +474,8 @@ public class CLI implements TabExecutor {
 					}
 					KBBSToper.getInstance().saveDefaultConfig();
 					Option.load();
-					Message.saveDefaultConfig();
-					Message.load();
+					configManager.reloadConfig(); // 使用 ConfigManager 重新加载配置
+					Message.load(configManager); // 将 ConfigManager 实例传递给 Message 类
 					SQLManager.initializeSQLer();
 					SQLManager.startTimingReconnect();
 					Util.startAutoReward();
