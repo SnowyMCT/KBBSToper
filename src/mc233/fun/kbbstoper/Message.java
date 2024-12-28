@@ -93,11 +93,13 @@ public enum Message {
 	private String cacheString; // 缓存内容
 	private List<String> cacheStringList; // 缓存内容
 
+	// 构造函数
 	Message(String path) {
 		this.path = path;
 	}
 
-	public static void load(ConfigManager configManager) {// 加载与重载
+	// 加载配置文件
+	public static void load(ConfigManager configManager) {
 		messageConfig = configManager.getLangFile(); // 从 ConfigManager 获取 lang 文件的配置
 		// 删除缓存
 		for (Message m : values()) {
@@ -106,17 +108,40 @@ public enum Message {
 		}
 	}
 
-	public String getString() {
-		if (cacheString != null)
+	// 获取单一的字符串并进行颜色转换
+	private String getCachedString() {
+		if (cacheString != null) {
 			return cacheString;
-		return cacheString = ChatColor.translateAlternateColorCodes('&', messageConfig.getString(path));
+		}
+		String rawString = messageConfig.getString(path);
+		if (rawString == null) {
+			return null; // 如果配置文件中没有找到该路径，返回null
+		}
+		return cacheString = ChatColor.translateAlternateColorCodes('&', rawString);
 	}
 
-	public List<String> getStringList() {
-		if (cacheStringList != null)
+	// 获取字符串列表并进行颜色转换
+	private List<String> getCachedStringList() {
+		if (cacheStringList != null) {
 			return cacheStringList;
-		return cacheStringList = Collections.unmodifiableList(// 禁止修改
-				messageConfig.getStringList(path).stream().map(msg -> ChatColor.translateAlternateColorCodes('&', msg))
-						.collect(Collectors.toList()));
+		}
+		List<String> rawList = messageConfig.getStringList(path);
+		if (rawList == null) {
+			return Collections.emptyList(); // 如果配置文件中没有找到该路径，返回空列表
+		}
+		return cacheStringList = Collections.unmodifiableList(
+				rawList.stream().map(msg -> ChatColor.translateAlternateColorCodes('&', msg))
+						.collect(Collectors.toList())
+		);
+	}
+
+	// 获取单一字符串（外部调用的接口）
+	public String getString() {
+		return getCachedString();
+	}
+
+	// 获取字符串列表（外部调用的接口）
+	public List<String> getStringList() {
+		return getCachedStringList();
 	}
 }
