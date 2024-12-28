@@ -8,6 +8,7 @@
 *.iml
 
 # Target folder
-target/
+/target/
+/.idea/
 
 dependency-reduced-pom.xml
