@@ -100,7 +100,7 @@ public class CLI implements TabExecutor {
 				if (args.length == 0) {// 没有带参数
 					if (sender instanceof Player) {
 						Player player = (Player) sender;
-						new GUI(player);
+						new GUI(player, configManager);
 					} else {
 						String[] args = { "help" };
 						onCommand(sender, cmd, label, args);

@@ -83,37 +83,25 @@ public class Crawler {
 	public void kickExpiredData() {
 		SimpleDateFormat sdfm = new SimpleDateFormat("yyyy-M-d HH:mm");
 		Date now = new Date();
-		long validtime = Option.REWARD_PERIOD.getInt() * 24 * 60 * 60 * 1000L;
-		Date expirydate = new Date(now.getTime() - validtime);
+		long validMillis = Option.REWARD_PERIOD.getInt() * 24L * 60 * 60 * 1000;
+		Date expiry = new Date(now.getTime() - validMillis);
 
-		// 使用 ListIterator 遍历
-		ListIterator<String> timeIterator = Time.listIterator();
-		ListIterator<String> idIterator = ID.listIterator();
+		// 倒序遍历，删除不会影响前面
+		for (int i = Time.size() - 1; i >= 0; i--) {
+			String timeStr = Time.get(i);
+			if (timeStr == null || timeStr.isBlank()) continue;
 
-		while (timeIterator.hasNext()) {
-			int index = timeIterator.nextIndex(); // 获取当前元素的索引
-			String timeStr = timeIterator.next(); // 获取当前时间
-
-			if (timeStr == null || timeStr.isEmpty()) {
-				continue;
-			}
-
-			Date date = null;
 			try {
-				date = sdfm.parse(timeStr);
+				Date date = sdfm.parse(timeStr);
+				if (date.before(expiry)) {
+					Time.remove(i);
+					ID.remove(i);
+				}
 			} catch (ParseException e) {
-				e.printStackTrace();
-				continue;
-			}
-
-			// 如果过期则删除
-			if (date.before(expirydate)) {
-				timeIterator.remove(); // 移除当前时间
-				idIterator.remove();   // 移除对应的 ID
+				KBBSToper.getInstance().getLogger().warning("无法解析时间: " + timeStr);
 			}
 		}
 	}
-
 
 	public void activeReward() {
 		for (int i = 0; i < ID.size(); i++) {

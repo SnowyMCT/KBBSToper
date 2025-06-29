@@ -12,12 +12,20 @@ import java.util.logging.Level;
 
 public class ConfigManager {
     private JavaPlugin plugin;
-    private FileConfiguration configFile;
-    private FileConfiguration langFile;
+    private FileConfiguration configFile, langFile, guiFile;
 
     public ConfigManager(JavaPlugin plugin) {
         this.plugin = plugin;
         this.setup();
+        setupGuiConfig();// 新增 gui.yml
+    }
+
+    private void setupGuiConfig() {
+        File f = new File(plugin.getDataFolder(), "gui.yml");
+        if (!f.exists()) {
+            plugin.saveResource("gui.yml", false);
+        }
+        guiFile = YamlConfiguration.loadConfiguration(f);
     }
 
     private void setup() {
@@ -38,15 +46,10 @@ public class ConfigManager {
         updateConfig(lang, "lang");
     }
 
-
-    /**
-     * 仅当配置文件内部写了 version 且与 plugin.yml 中的版本不同时，才备份并重置
-     */
     private void updateConfig(File file, String name) {
-        String fileVersion = configFile.getString("version");                // 从用户的 config.yml 中读 version
-        String pluginVersion = plugin.getDescription().getVersion();         // plugin.yml 里写的版本号
+        String fileVersion = configFile.getString("version");
+        String pluginVersion = plugin.getDescription().getVersion();
 
-        // 只有用户 config.yml 里明确写了 version 并且版本不同，才进行备份和替换
         if (fileVersion != null && !fileVersion.equals(pluginVersion)) {
             try {
                 // 先备份老配置
@@ -75,6 +78,7 @@ public class ConfigManager {
         try {
             this.configFile.save(new File(this.plugin.getDataFolder(), "config.yml"));
             this.langFile.save(new File(this.plugin.getDataFolder(), "lang.yml"));
+            this.guiFile.save(new File(this.plugin.getDataFolder(), "gui.yml"));
         } catch (IOException var2) {
             var2.printStackTrace();
         }
@@ -84,6 +88,7 @@ public class ConfigManager {
     public void reloadConfig() {
         this.configFile = YamlConfiguration.loadConfiguration(new File(this.plugin.getDataFolder(), "config.yml"));
         this.langFile = YamlConfiguration.loadConfiguration(new File(this.plugin.getDataFolder(), "lang.yml"));
+        this.guiFile = YamlConfiguration.loadConfiguration(new File(this.plugin.getDataFolder(), "gui.yml"));
     }
 
     public void updateConfigFromJar(String name) {
@@ -95,5 +100,9 @@ public class ConfigManager {
 
         oldConfig.renameTo(oldConfigRenamed);
         this.plugin.saveResource(name + ".yml", false);
+    }
+
+    public FileConfiguration getGuiConfig() {
+        return guiFile;
     }
 }

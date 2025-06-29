@@ -1,0 +1,52 @@
+# -------------------------------------------------------------------
+# 这里是 KBBSToper 的自定义 GUI 配置
+# -------------------------------------------------------------------
+# 界面标题，支持颜色代码和 %PREFIX%
+title: '&e&l%PREFIX% 面板'
+# 行数（每行 9 格）
+rows: 3
+
+# 边框设置（可不写，默认用随机玻璃板）
+border:
+  fill: 'WHITE_STAINED_GLASS_PANE'
+  slots:
+    - 0;1;2;3;4;5;6;7;8
+    - 9;17
+    - 18;26
+    - 27;35
+    - 36;44
+    - 45;53
+
+# 下面定义每个槽位上的物品，key 只是标识，可任意改
+items:
+  bind:
+    slot: 12
+    type: 'PLAYER_HEAD'
+    displayName: '&a绑定/重新绑定'
+    lore:
+      - '&7点击绑定您的论坛ID'
+    action: 'binding'
+
+  reward:
+    slot: 13
+    type: 'SUNFLOWER'
+    displayName: '&b领取奖励'
+    lore:
+      - '&7点击领取当前帖奖励'
+    action: 'reward'
+
+  top:
+    slot: 14
+    type: 'NETHER_STAR'
+    displayName: '&e顶贴排行'
+    lore:
+      - '&7点击查看全服排名'
+    action: 'top'
+
+  status:
+    slot: 22
+    type: 'COMPASS'
+    displayName: '&d帖子状态'
+    lore:
+      - '&7点击打开宣传帖链接'
+    action: 'open'
