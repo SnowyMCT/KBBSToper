@@ -71,44 +71,56 @@ public class Util {
 		if (runningtaskidlist.contains(i))
 			runningtaskidlist.remove((Integer) i);
 	}
-	
-	public static String getExtraReward(Crawler crawler) {// 获取会获得的额外奖励(可为空)
-		boolean incentive = false;// 是否符合激励奖励条件
-		boolean offday = false;// 是否符合休息日奖励条件
-		Calendar current = Calendar.getInstance();// 当前时间
-		Calendar lastpost = Calendar.getInstance();// 上一次顶贴的时间
-		if (crawler.Time.size() > 0) {// 如果有顶贴记录的话
-			SimpleDateFormat bbsformat = new SimpleDateFormat("yyyy-M-d HH:mm");// bbs的日期格式
-			Date lastpostdate = null;
-			try {
-				lastpostdate = bbsformat.parse(crawler.Time.get(0));
-			} catch (ParseException e) {
-				e.printStackTrace();
+
+	public static String getExtraReward(Crawler crawler) {
+		boolean incentive = false; // 激励奖励
+		boolean offday    = false; // 休息日奖励
+
+		// 当前时间
+		Calendar current = Calendar.getInstance();
+
+		// 上一次顶帖时间，默认设置为 1970-01-01
+		Calendar lastpost = Calendar.getInstance();
+		lastpost.setTime(new Date(0));
+
+		// 如果有顶帖记录，就尝试解析第一条时间
+		if (!crawler.Time.isEmpty()) {
+			String firstTime = crawler.Time.get(0);
+			if (firstTime != null && !firstTime.isBlank()) {
+				try {
+					Date parsed = new SimpleDateFormat("yyyy-M-d HH:mm")
+							.parse(firstTime);
+					lastpost.setTime(parsed);
+				} catch (ParseException e) {
+					// 解析失败时打印一条警告，保持 lastpost=1970
+					KBBSToper.getInstance().getLogger()
+							.warning("无法解析顶帖时间: \"" + firstTime + "\"");
+				}
 			}
-			lastpost.setTime(lastpostdate);
 		}
+
+		// 判断激励/休息日奖励条件
 		if (Reward.canIncentiveReward(current, lastpost)) {
 			incentive = true;
 		}
 		if (Reward.canOffDayReward(current)) {
 			offday = true;
 		}
+
+		// 拼接额外奖励提示
 		String extra = null;
 		if (incentive) {
-			// 如果休息日奖励也达成了, 并且激励奖励和休息日奖励都不是额外奖励, 不会发放激励奖励(只会发放休息日奖励)
-			if (!(offday && Option.REWARD_INCENTIVEREWARD_EXTRA.getBoolean() == false
-					&& Option.REWARD_OFFDAYREWARD_EXTRA.getBoolean() == false)) {
-				extra = new String(Message.GUI_INCENTIVEREWARDS.getString());
+			// 当同时满足 offday 且激励/休息日都不是“额外”时
+			if (!(offday
+					&& !Option.REWARD_INCENTIVEREWARD_EXTRA.getBoolean()
+					&& !Option.REWARD_OFFDAYREWARD_EXTRA.getBoolean())) {
+				extra = Message.GUI_INCENTIVEREWARDS.getString();
 			}
 		}
 		if (offday) {
-			if (extra == null) {
-				extra = new String(Message.GUI_OFFDAYREWARDS.getString());
-			} else {
-				extra = extra + "+" + Message.GUI_OFFDAYREWARDS.getString();
-			}
+			String offText = Message.GUI_OFFDAYREWARDS.getString();
+			extra = (extra == null) ? offText : (extra + "+" + offText);
 		}
 		return extra;
 	}
-
 }
