@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.logging.Level;
 
 public class ConfigManager {
     private JavaPlugin plugin;
@@ -20,35 +21,46 @@ public class ConfigManager {
     }
 
     private void setup() {
-        File config = new File(this.plugin.getDataFolder(), "config.yml");
-        if (!config.exists()) {
-            this.plugin.saveResource("config.yml", false);
+        // config.yml
+        File cfg = new File(plugin.getDataFolder(), "config.yml");
+        if (!cfg.exists()) {
+            plugin.saveResource("config.yml", false);
         }
-        this.configFile = YamlConfiguration.loadConfiguration(config);
-        this.updateConfig(config, "config");
+        configFile = YamlConfiguration.loadConfiguration(cfg);
+        updateConfig(cfg, "config");
 
-
-        File lang = new File(this.plugin.getDataFolder(), "lang.yml");
+        // lang.yml
+        File lang = new File(plugin.getDataFolder(), "lang.yml");
         if (!lang.exists()) {
-            this.plugin.saveResource("lang.yml", false);
+            plugin.saveResource("lang.yml", false);
         }
-        this.langFile = YamlConfiguration.loadConfiguration(lang);
-        this.updateConfig(lang, "lang");
-
-
+        langFile = YamlConfiguration.loadConfiguration(lang);
+        updateConfig(lang, "lang");
     }
 
+
+    /**
+     * 仅当配置文件内部写了 version 且与 plugin.yml 中的版本不同时，才备份并重置
+     */
     private void updateConfig(File file, String name) {
-        String version = this.configFile.getString("version");
-        if (version == null || !version.equals(this.plugin.getDescription().getVersion())) {
+        String fileVersion = configFile.getString("version");                // 从用户的 config.yml 中读 version
+        String pluginVersion = plugin.getDescription().getVersion();         // plugin.yml 里写的版本号
+
+        // 只有用户 config.yml 里明确写了 version 并且版本不同，才进行备份和替换
+        if (fileVersion != null && !fileVersion.equals(pluginVersion)) {
             try {
-                Files.copy(file.toPath(), (new File(this.plugin.getDataFolder(), name + "_old.yml")).toPath(), StandardCopyOption.REPLACE_EXISTING);
-                this.plugin.saveResource(name + ".yml", true);
-            } catch (IOException var5) {
-                var5.printStackTrace();
+                // 先备份老配置
+                Files.copy(
+                        file.toPath(),
+                        new File(plugin.getDataFolder(), name + "_old.yml").toPath(),
+                        StandardCopyOption.REPLACE_EXISTING
+                );
+                // 再从 jar 中复制最新的模板出来
+                plugin.saveResource(name + ".yml", true);
+            } catch (IOException ex) {
+                plugin.getLogger().log(Level.SEVERE, "更新 " + name + ".yml 时出错", ex);
             }
         }
-
     }
 
     public FileConfiguration getConfigFile() {

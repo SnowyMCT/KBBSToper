@@ -1,0 +1,129 @@
+#########################################
+#                                       #
+#       这里是KBBSToper的配置文件        #
+#                                       #
+#########################################
+
+#原项目地址: https://github.com/R-Josef/BBSToper
+#新构建地址:
+#请定期检查这些网址以获取可用的更新
+#Copyright © 2018-2020 R_Josef 版权所有
+
+version: 3.7.2
+
+#DEBUG模式
+debug: false
+
+#数据库设置
+database:
+    #表名前缀, 在sqlite和mysql都有效
+    #可用两个单引号表示留空, 例如prefix: ''
+    prefix: 'bt_'
+    #定时自动断开并重新连接数据库
+    #数据库使用长连接有可能导致速度越来越慢(我不确定)
+    #可以尝试开启此选项, 单位秒, 设置为0则关闭
+    timingreconnect: 0
+    #可选mysql或sqlite
+    type: 'sqlite'
+    #mysql设置
+    mysql:
+        ip: 'localhost'
+        port: '3306'
+        database: 'databasename'
+        user: 'username'
+        password: 'password'
+        ssl: false
+    #sqlite设置
+    sqlite:
+        folder: '%PLUGIN_FOLDER%'
+        database: 'bbstoper.db'
+
+bbs:
+    #服务器宣传贴的帖子id
+    url: '1034574'
+    #顶帖列表/玩家排名每页的大小
+    pagesize: 10
+    #玩家多久能更换一次绑定的id, 单位天
+    changeidcooldown: 30
+    #玩家多久能使用一次奖励指令以及查询指令, 单位秒
+    querycooldown: 30
+    #如果一个玩家没有顶贴是否在加入时发送提示消息
+    joinmessage: true
+
+# 代理设置
+proxy:
+    # 启用代理
+    enable: false
+    # 代理ip
+    ip: '127.0.0.1'
+    # 代理端口
+    port: 10809
+
+gui:
+    #玩家排名的显示数量
+    topplayers: 5
+    #显示GUI中的头颅皮肤
+    #获取头颅皮肤时有可能因为网络原因造成卡顿(我不确定)
+    #如果在打开GUI时遇到主线程卡顿, 请尝试关闭此项
+    displayheadskin: true
+    #是否启用按键后输入绑定ID
+    #如果某些插件导致玩家聊天事件消息被修改或者取消
+    #那么插件将获取不到正确的输入，这时候请关闭此项
+    usechatgetid: true
+    #取消绑定的关键词
+    #在点击了绑定按钮之后会通过监听聊天消息来获取bbs用户名
+    #而输入这些关键词可以取消监听要绑定的id的操作
+    cancelkeywords:
+    - 'cancel'
+    - '取消'
+
+#奖励设置
+reward:
+    #自动奖励间隔，将在指定的间隔下循环访问宣传帖
+    #如有玩家顶贴就将自动给该玩家奖励，但必须该玩家在线
+    #单位秒，设置为0则关闭，此选项需要大量网络IO建议设置为30左右
+    auto: 30
+    #顶贴后领取奖励的有效期, 单位天
+    period: 10
+    #同一个玩家距离上次顶贴多少分钟后再次顶贴才算有效, 设置为0则一直有效
+    interval: 10
+    #一天能领取几次顶帖奖励
+    times: 1
+    #奖励的命令, %PLAYER%代表使用命令的玩家ID
+    commands:
+    - 'experience add %PLAYER% 1000'
+    - 'eco give %PLAYER% 20'
+    #激励奖励
+    #当玩家在无人顶贴超过一定时间之后顶贴, 这些奖励命令会被执行
+    incentivereward:
+        #是否启用
+        enable: false
+        #是否为额外奖励(是否还会给与普通的奖励)
+        extra: true
+        #间隔时间, 单位为分钟
+        #距离上一次有人顶贴多久之后会给与激励奖励
+        period: 30
+        #奖励命令
+        commands:
+        - 'effect give %PLAYER% haste 2'
+    #休息日奖励
+    #当玩家在设定好的休息日顶贴, 这些奖励命令会被执行
+    offdayreward:
+        #是否启用
+        enable: false
+        #是否为额外奖励(是否还会给与普通的奖励)
+        #注意: 当"休息日奖励"与"激励奖励"的"额外奖励"选项都为false时
+        #如果"休息日奖励"与"激励奖励"的条件同时满足, 将只有"休息日奖励"会被发放
+        extra: true
+        #哪些日期会应用于这项设置
+        #表示一个星期中的某一天: SUNDAY(周日), MONDAY(周一), TUESDAY(周二)
+        #WEDNESDAY(周三), THURSDAY(周四), FRIDAY(周五), SATURDAY(周六)
+        #普通日期格式为MM-dd, 例如10-01表示十月一日
+        offdays:
+        - 'SATURDAY'
+        - 'SUNDAY'
+        - '10-01'
+        - '05-01'
+        #奖励命令
+        commands:
+        - 'effect give %PLAYER% speed 2'
