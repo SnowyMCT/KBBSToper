@@ -24,11 +24,12 @@ public class SQLManager {
 				sql = SQLiter.getInstance();
 			}
 			sql.load();
-			CLI.setSQLer(sql);
-			GUI.setSQLer(sql);
-			Crawler.setSQLer(sql);
-			Poster.setSQLer(sql);
-			Reminder.setSQLer(sql);
+			SQLer instance = sql;                   // sql 已经初始化
+			CLI.setSQLer(instance);
+			GUI.setSQLer(instance);
+			Crawler.setSQLer(instance);
+			Poster.setSQLer(instance);
+			Reminder.setSQLer(instance);
 			if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
 				PAPIExpansion.setSQLer(sql);
 			}
@@ -42,6 +43,10 @@ public class SQLManager {
 	public static void closeSQLer() {// 关闭数据库
 		sql.closeConnection();
 		sql = null;
+	}
+
+	public static SQLer getSQLer() {
+		return sql;
 	}
 
 	public static void startTimingReconnect() {// 自动重连数据库的方法

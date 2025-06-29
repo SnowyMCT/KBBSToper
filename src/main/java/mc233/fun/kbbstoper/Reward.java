@@ -20,14 +20,18 @@ public class Reward {
 	private static final Pattern UPCASE_PATTERN = Pattern.compile("^[A-Z]+$");
 	private static final Pattern DATE_PATTERN = Pattern.compile("^\\d{2}-\\d{2}$");
 
-	// 将日期字符串转换为Calendar对象的方法设为静态方法
 	private static Calendar parseDateToCalendar(String dateStr, SimpleDateFormat dateFormat) {
 		Calendar calendar = Calendar.getInstance();
+		if (dateStr == null || dateStr.isBlank()) {
+			calendar.setTime(new Date(0)); // 默认时间
+			return calendar;
+		}
 		try {
 			Date date = dateFormat.parse(dateStr);
 			calendar.setTime(date);
 		} catch (ParseException e) {
-			e.printStackTrace();
+			KBBSToper.getInstance().getLogger().warning("无法解析时间：" + dateStr);
+			calendar.setTime(new Date(0)); // 回退到安全时间
 		}
 		return calendar;
 	}
@@ -74,25 +78,34 @@ public class Reward {
 		}
 	}
 
-	// 判断顶贴间隔是否过短
 	public boolean isIntervalTooShort(Calendar thispost, int index) {
-		SimpleDateFormat bbsformat = new SimpleDateFormat("yyyy-M-d HH:mm"); // bbs的日期格式
-		Date thispostdate = thispost.getTime();
+		SimpleDateFormat bbsformat = new SimpleDateFormat("yyyy-M-d HH:mm");
+		Date thispostDate = thispost.getTime();
+
 		for (int x = index + 1; x < crawler.Time.size(); x++) {
+			if (!crawler.ID.get(x).equalsIgnoreCase(crawler.ID.get(index))) continue;
+
+			String timeStr = crawler.Time.get(x);
+			if (timeStr == null || timeStr.isBlank()) continue;
+
 			try {
-				Date lastdate = bbsformat.parse(crawler.Time.get(x));
-				if ((thispostdate.getTime() - lastdate.getTime()) / (1000 * 60) > Option.REWARD_INTERVAL.getInt()) {
-					break;
-				}
-				if (crawler.ID.get(x).equals(crawler.ID.get(index))) { // 如果是同一用户，说明间隔过短
+				Date lastDate = bbsformat.parse(timeStr);
+				if (lastDate == null) continue;
+
+				long minutes = (thispostDate.getTime() - lastDate.getTime()) / (1000 * 60);
+				if (minutes <= Option.REWARD_INTERVAL.getInt()) {
 					return true;
+				} else {
+					break; // 时间间隔已超阈值，可退出
 				}
 			} catch (ParseException e) {
-				e.printStackTrace();
+				KBBSToper.getInstance().getLogger()
+						.warning("无法解析顶贴时间：" + timeStr + "（index=" + x + "）");
 			}
 		}
 		return false;
 	}
+
 
 	// 构造函数
 	public Reward(Player player, Crawler crawler, int index) {
