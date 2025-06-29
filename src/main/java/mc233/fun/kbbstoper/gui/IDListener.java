@@ -98,14 +98,14 @@ public class IDListener extends RegisteredListener implements Listener, EventExe
 		List<String> cancelkeywords = Option.GUI_CANCELKEYWORDS.getStringList();// 取消绑定关键词
 		if (cancelkeywords.contains(msg)) {// 如果关键词中包含这次输入的消息
 			unregister();// 取消监听事件
-			CLI.getInstance(configManager).getCache().put(player.getUniqueId().toString(), null);// 清理这个键
+			CLI.getInstance().getCache().put(player.getUniqueId().toString(), null);// 清理这个键
 			player.sendMessage(Message.PREFIX.getString() + Message.CANCELED.getString());
 			return;
 		}
 		List<String> list = new ArrayList<>(Arrays.asList(msg.split("\\s+")));
 		list.add(0, "binding");
 		String[] args = list.toArray(new String[0]);
-		CLI.getInstance(configManager).onCommand(player, null, null, args);
+		CLI.getInstance().onCommand(player, null, null, args);
 		if (state) {// state为true说明这是第二次进入这个方法
 			unregister();
 		} else {// state为false说明是第一次进入

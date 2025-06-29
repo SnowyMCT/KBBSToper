@@ -4,6 +4,7 @@ import mc233.fun.kbbstoper.CLI;
 import mc233.fun.kbbstoper.ConfigManager;
 import mc233.fun.kbbstoper.Message;
 import mc233.fun.kbbstoper.Option;
+import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -11,13 +12,14 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.Plugin;
 
-import java.util.UUID;
-
 public class GUIManager implements Listener {
-	private final ConfigManager cfg;
+	private final CLI cli;
 
-	public GUIManager(Plugin plugin, ConfigManager cfg) {
-		this.cfg = cfg;
+	/**
+	 * 构造时传入 CLI 单例
+	 */
+	public GUIManager(Plugin plugin, ConfigManager cfg, CLI cli) {
+		this.cli = cli;
 		plugin.getServer().getPluginManager().registerEvents(this, plugin);
 	}
 
@@ -25,30 +27,30 @@ public class GUIManager implements Listener {
 	public void onClick(InventoryClickEvent ev) {
 		if (!(ev.getWhoClicked() instanceof Player)) return;
 		Player p = (Player) ev.getWhoClicked();
-		InventoryHolder h = p.getOpenInventory().getTopInventory().getHolder();
-		if (!(h instanceof GUI.GUIHolder)) return;
+		InventoryHolder holder = p.getOpenInventory().getTopInventory().getHolder();
+		if (!(holder instanceof GUI.GUIHolder)) return;
 
 		ev.setCancelled(true);
 		int slot = ev.getRawSlot();
-		String act = ((GUI.GUIHolder) h).getActions().get(slot);
-		if (act == null) return;
+		String action = ((GUI.GUIHolder) holder).getActions().get(slot);
+		if (action == null) return;
 
 		p.closeInventory();
-		switch (act.toLowerCase()) {
+		// 注意：这里 cmd 和 label 参数我们传 null 和插件主命令名
+		Command fakeCmd = null;
+		String label = "kbbstoper";
+
+		switch (action.toLowerCase()) {
 			case "binding":
-				CLI.getInstance(cfg)
-						.onCommand(p, null, null, new String[]{"binding"});
+				cli.onCommand(p, fakeCmd, label, new String[]{"binding"});
 				break;
 			case "reward":
-				CLI.getInstance(cfg)
-						.onCommand(p, null, null, new String[]{"reward"});
+				cli.onCommand(p, fakeCmd, label, new String[]{"reward"});
 				break;
 			case "top":
-				CLI.getInstance(cfg)
-						.onCommand(p, null, null, new String[]{"top"});
+				cli.onCommand(p, fakeCmd, label, new String[]{"top"});
 				break;
 			case "open":
-				// 打开宣传帖链接
 				String url = "https://www.klpbbs.com/thread-"
 						+ Option.BBS_URL.getString()
 						+ "-1-1.html";
@@ -57,8 +59,7 @@ public class GUIManager implements Listener {
 				}
 				break;
 			default:
-				p.sendMessage(Message.PREFIX.getString()
-						+ Message.INVALID.getString());
+				p.sendMessage(Message.PREFIX.getString() + Message.INVALID.getString());
 		}
 	}
 }
