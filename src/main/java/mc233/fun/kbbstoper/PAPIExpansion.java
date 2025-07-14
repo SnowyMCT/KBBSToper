@@ -18,7 +18,7 @@ public class PAPIExpansion extends PlaceholderExpansion {
 
 	PAPIExpansion() {
 		this.author = KBBSToper.getInstance().getDescription().getAuthors().toString();
-		this.identifier = KBBSToper.getInstance().getDescription().getName().toLowerCase();
+//		this.identifier = KBBSToper.getInstance().getDescription().getName().toLowerCase();
 		this.version = KBBSToper.getInstance().getDescription().getVersion();
 	}
 
@@ -46,8 +46,9 @@ public class PAPIExpansion extends PlaceholderExpansion {
 
 	@Override
 	public String getIdentifier() {
-		return identifier;
+		return "bbstoper";
 	}
+
 
 	@Override
 	public String getVersion() {

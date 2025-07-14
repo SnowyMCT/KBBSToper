@@ -78,30 +78,10 @@ faileduninstallmo: '未能按照预期卸载监听!'
 gui:
     title: '%PREFIX%'
     frame: '&8我是边框'
-    skull: '&e%PLAYER%&b的绑定数据'
     notbound: '&4未绑定KLPBBS账号'
-    clickbound: '&c点击绑定'
-    clickrebound: '&c点击重新绑定'
-    bbsid: '&2绑定账号: &e%BBSID%'
-    posttimes: '&2顶贴次数: &e%TIMES%'
-    rewards: '&b奖励信息'
     incentiverewards: '&b激励奖励'
     offdayrewards: '&b休息日奖励'
-    clickget: '&a点击领取奖励'
-    tops: '&b顶贴排行'
-    pagestate: '§b宣传帖状态'
-    pageid: '&2帖子ID: &f%PAGEID%'
-    lastpost: '&2上一次顶贴: &f%TIME%'
-    extrarewards: '&2现在顶贴可获得: %EXTRA%'
     pagenotvisible: '&c宣传帖目前处于不可视状态'
-    clickopen: '&a点击获取链接'
-    #这里是自定义GUI中的奖励信息, 留空则直接显示奖励命令 ([]表示留空)
-    #如果您想自定义，那么应该按照如下的格式来写
-    #rewardsinfo:
-    #- '&a自定义奖励信息1'
-    #- '&b自定义奖励信息2'
-    #- '&c自定义奖励信息3'
-    rewardsinfo: []
 
 #这里是玩家点击GUI中klpbbs宣传帖状态图标后发送的消息
 clickposticon:
