@@ -19,15 +19,26 @@ gui:
     bind:
       slot: 12
       type: 'PLAYER_HEAD'
-      displayName: '&a绑定/重新绑定'
+      displayName: '&a绑定绑定'
       lore:
         - '&7点击绑定您的论坛ID'
       action: 'binding'
+      # 以下为已绑定后的替换内容
+      bound-type: 'PLAYER_HEAD'
+      bound-displayName: '&a已绑定：%player_name%'
+      bound-lore:
+        - '&7绑定账号：%bbstoper_bbsid%'
+        - '&7顶贴次数：%bbstoper_posttimes%'
+        - '&7上次顶贴：%bbstoper_lastpost%'
+        - ‘’
+        - ‘&e点击重新绑定’
+      bound-action: 'binding'
     reward:
       slot: 13
       type: 'SUNFLOWER'
       displayName: '&b领取奖励'
       lore:
+        - '&7奖励: 114514个 绿宝石'
         - '&7点击领取当前帖奖励'
       action: 'reward'
     top:

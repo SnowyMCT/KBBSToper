@@ -1,10 +1,6 @@
 package mc233.fun.kbbstoper.gui;
 
-import mc233.fun.kbbstoper.ConfigManager;
-import mc233.fun.kbbstoper.KBBSToper;
-import mc233.fun.kbbstoper.Message;
-import mc233.fun.kbbstoper.Option;
-import mc233.fun.kbbstoper.Util;
+import mc233.fun.kbbstoper.*;
 import mc233.fun.kbbstoper.sql.SQLer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -14,7 +10,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-
 import java.util.*;
 
 public class GUI {
@@ -36,16 +31,15 @@ public class GUI {
 		);
 	}
 
-	/** 标记这是我们的 GUI，并携带 slot->action 映射 */
 	public class GUIHolder implements InventoryHolder {
 		@Override
 		public Inventory getInventory() { return inv; }
-		public Map<Integer,String> getActions() { return actions; }
+		public Map<Integer, String> getActions() { return actions; }
 	}
 
 	private void buildGui(Player player) {
-		// 1. 从 gui.yml 读取根节点
-		ConfigurationSection root = cfgMgr.getGuiConfig().getConfigurationSection("gui");
+		ConfigurationSection root = cfgMgr.getGuiConfig()
+				.getConfigurationSection("gui");
 		if (root == null) {
 			KBBSToper.getInstance().getLogger()
 					.severe("无法读取 gui.yml 中的 gui 节点！");
@@ -55,17 +49,16 @@ public class GUI {
 		String rawTitle = root.getString("title", Message.GUI_TITLE.getString())
 				.replace("%PREFIX%", Message.PREFIX.getString());
 		String title = ChatColor.translateAlternateColorCodes('&', rawTitle);
-
 		int rows = Math.max(1, root.getInt("rows", 3));
 		inv = Bukkit.createInventory(new GUIHolder(), rows * 9, title);
 
-		// 3. 画边框（如果配置了 border）
+		// 画边框
 		if (root.isConfigurationSection("border")) {
 			ConfigurationSection bsec = root.getConfigurationSection("border");
-			Material fill = Material.valueOf(bsec.getString("fill", "WHITE_STAINED_GLASS_PANE"));
+			Material fill = Material.valueOf(
+					bsec.getString("fill", "WHITE_STAINED_GLASS_PANE"));
 			String rawSlots = String.join(";",
-					(List<String>) bsec.get("slots", Collections.emptyList())
-			);
+					(List<String>) bsec.get("slots", Collections.emptyList()));
 			for (String part : rawSlots.split(";")) {
 				try {
 					int slot = Integer.parseInt(part.trim());
@@ -73,57 +66,84 @@ public class GUI {
 				} catch (Exception ignore) {}
 			}
 		} else {
-			// 默认随机边框
 			for (int i = 0; i < inv.getSize(); i++) {
 				if (i > 9 && i < 17) continue;
 				inv.setItem(i, getRandomPane());
 			}
 		}
 
-		// 4. 按 items 定义放置物品
+		// items
 		ConfigurationSection items = root.getConfigurationSection("items");
-		if (items != null) {
-			for (String key : items.getKeys(false)) {
-				ConfigurationSection isec = items.getConfigurationSection(key);
-				int slot = isec.getInt("slot", -1);
-				if (slot < 0 || slot >= inv.getSize()) continue;
+		if (items == null) return;
 
-				// 材质
-				Material mat = Material.valueOf(isec.getString("type", "STONE"));
-				ItemStack item = new ItemStack(mat);
-				ItemMeta meta = item.getItemMeta();
+		for (String key : items.getKeys(false)) {
+			ConfigurationSection isec = items.getConfigurationSection(key);
+			int slot = isec.getInt("slot", -1);
+			if (slot < 0 || slot >= inv.getSize()) continue;
 
-				// 显示名
-				String dn = isec.getString("displayName", "").replace("&", "§");
-				meta.setDisplayName(dn);
+			boolean isBind = key.equals("bind");
+			String userUuid = player.getUniqueId().toString();
+			Poster poster = sql.getPoster(userUuid);
+			String posterId = (poster != null ? poster.getBbsname() : null);
 
-				// lore
-				List<String> lore = new ArrayList<>();
-				for (String line : isec.getStringList("lore")) {
-					lore.add(line.replace("&", "§"));
-				}
-				meta.setLore(lore);
+			boolean bound = posterId != null && !posterId.isBlank();
 
-				// 如果是玩家头像
-				if (mat == Material.PLAYER_HEAD && posterBound(player)) {
-					((SkullMeta) meta).setOwningPlayer(player);
-				}
+			// 选择材质
+			String typeKey = (isBind && bound && isec.getString("bound-type") != null)
+					? "bound-type" : "type";
+			Material mat = Material.valueOf(
+					isec.getString(typeKey, "STONE"));
 
+			ItemStack item = new ItemStack(mat);
+			ItemMeta meta = item.getItemMeta();
+
+			// 名称
+			String nameKey = (isBind && bound && isec.getString("bound-displayName") != null)
+					? "bound-displayName" : "displayName";
+			String rawName = isec.getString(nameKey, "");
+			String parsedName = applyPlaceholders(player, rawName);
+			meta.setDisplayName(
+					ChatColor.translateAlternateColorCodes('&', parsedName));
+
+			// lore
+			List<String> rawLore = (isBind && bound && isec.isList("bound-lore"))
+					? isec.getStringList("bound-lore")
+					: isec.getStringList("lore");
+			List<String> lore = new ArrayList<>();
+			for (String line : rawLore) {
+				String parsed = applyPlaceholders(player, line);
+				lore.add(ChatColor.translateAlternateColorCodes('&', parsed));
+			}
+			meta.setLore(lore);
+
+			// 玩家头像
+			if (mat == Material.PLAYER_HEAD) {
+				SkullMeta skull = (SkullMeta) meta;
+				skull.setOwningPlayer(player);
+				item.setItemMeta(skull);
+			} else {
 				item.setItemMeta(meta);
-				inv.setItem(slot, item);
+			}
 
-				// 记录点击动作
-				String action = isec.getString("action", "");
-				if (!action.isBlank()) {
-					actions.put(slot, action);
-				}
+			inv.setItem(slot, item);
+
+			// 点击动作
+			String actionKey = (isBind && bound)
+					? isec.getString("bound-action", "")
+					: isec.getString("action", "");
+			if (!actionKey.isBlank()) {
+				actions.put(slot, actionKey);
 			}
 		}
 	}
 
-	/** border 随机玻璃板 */
 	private ItemStack getRandomPane() {
-		Material[] panes = {/*.. 同上 ..*/};
+		Material[] panes = {
+				Material.WHITE_STAINED_GLASS_PANE,
+				Material.LIGHT_GRAY_STAINED_GLASS_PANE,
+				Material.GRAY_STAINED_GLASS_PANE,
+				Material.BLACK_STAINED_GLASS_PANE
+		};
 		Material m = panes[new Random().nextInt(panes.length)];
 		return createPane(m);
 	}
@@ -136,7 +156,11 @@ public class GUI {
 		return it;
 	}
 
-	private boolean posterBound(Player p) {
-		return sql.getPoster(p.getUniqueId().toString()) != null;
+	private String applyPlaceholders(Player player, String text) {
+		if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+			return me.clip.placeholderapi.PlaceholderAPI
+					.setPlaceholders(player, text);
+		}
+		return text;
 	}
 }
