@@ -104,3 +104,31 @@ nukkit/  基岩版(Nukkit): 原生表单界面(FormWindow) + 内置 sqlite/mysql
 | %bbstoper_pageurl%    | 宣传贴的链接                                       |
 | %bbstoper_lastpost%   | 上一次被顶贴的时间                                 |
 | %bbstoper_top_<序号>% | 顶贴排行第"序号"个的顶贴信息, 例: %bbstoper_top_1% |
+
+## 贡献者
+
+感谢所有让这个插件变好的人:
+
+<table>
+  <tr>
+    <td align="center" width="100">
+      <a href="https://github.com/R-Josef"><img src="https://github.com/R-Josef.png?size=56" width="56" alt="R-Josef"><br><sub>R-Josef</sub></a>
+    </td>
+    <td align="center" width="100">
+      <a href="https://github.com/NeglectDream"><img src="https://github.com/NeglectDream.png?size=56" width="56" alt="NeglectDream"><br><sub>NeglectDream</sub></a>
+    </td>
+    <td align="center" width="100">
+      <a href="https://github.com/mincHR549"><img src="https://github.com/mincHR549.png?size=56" width="56" alt="XiaoHaoo"><br><sub>XiaoHaoo</sub></a>
+    </td>
+  </tr>
+</table>
+
+| 贡献者 | 贡献 |
+| ----------------------------- | ---- |
+| [R-Josef](https://github.com/R-Josef) | 上游 [BBSToper](https://github.com/R-Josef/BBSToper) 作者, 本插件的基础实现 |
+| [NeglectDream](https://github.com/NeglectDream) | 反馈论坛改版导致的抓取失效, 提交域名修复 [PR #1](https://github.com/mincHR549/KBBSToper/pull/1) — 该思路已在新架构中作为 `website` 配置项落地(见 [config.yml](core/src/main/resources/config.yml), 五处链接统一走该配置) |
+| [XiaoHaoo](https://github.com/mincHR549) | 现维护者: 多模块重构, Nukkit(基岩版)支持, 爬虫缓存与并发问题修复 |
+
+历史提交记录中还有 SnowCherry、SnowyMC、Cherry、Karlatemp、apachezy、DreamVoid、流光溢彩Last、sandtechnology 等, 一并致谢。
+
+[完整贡献者图谱](https://github.com/mincHR549/KBBSToper/graphs/contributors)
